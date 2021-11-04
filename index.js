@@ -24,15 +24,16 @@ async function run() {
         await client.connect();
         const database = client.db("planetParadise");
         const tourCollection = database.collection("tourPackages");
+        const bookingCollection = database.collection("bookings");
 
-        // GET API
+        // Showing All Package into Home Page
         app.get('/tourpackages', async (req, res) => {
             const cursor = tourCollection.find({});
             const tourPackages = await cursor.toArray();
             res.send(tourPackages);
         });
 
-        // GET Single API
+        // Showing Single Package Into Private Route
         app.get('/tourpackages/:id', async (req, res) => {
             const id = req.params.id;
             console.log("Getting Specific Package: ", id);
@@ -41,7 +42,7 @@ async function run() {
             res.json(tourPackage);
         });
 
-        // POST API
+        // Adding New Package into Database
         app.post('/tourpackages', async (req, res) => {
             const newTourPack = req.body;
 
@@ -49,6 +50,30 @@ async function run() {
             console.log(result);
             res.json(result);
         });
+
+        // Confirm Booking
+        app.post('/bookings', async (req, res) => {
+            const booking = req.body;
+
+            const result = await bookingCollection.insertOne(booking);
+            console.log(result);
+            res.json(result);
+        });
+
+        // Showing Bookings Into UI
+        app.get('/bookings', async (req, res) => {
+            const cursor = bookingCollection.find({});
+            const bookingPackages = await cursor.toArray();
+            res.send(bookingPackages);
+        });
+
+        // Delete Booking
+        app.delete('/bookings/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await bookingCollection.deleteOne(query);
+            res.json(result);
+        })
 
     } finally {
         // await client.close();
