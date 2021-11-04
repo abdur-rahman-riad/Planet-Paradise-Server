@@ -2,6 +2,7 @@ const express = require('express');
 const { MongoClient } = require('mongodb');
 require('dotenv').config();
 const cors = require("cors");
+const ObjectId = require("mongodb").ObjectId;
 
 // Getting PORT
 const app = express();
@@ -23,6 +24,22 @@ async function run() {
         await client.connect();
         const database = client.db("planetParadise");
         const tourCollection = database.collection("tourPackages");
+
+        // GET API
+        app.get('/tourpackages', async (req, res) => {
+            const cursor = tourCollection.find({});
+            const tourPackages = await cursor.toArray();
+            res.send(tourPackages);
+        });
+
+        // GET Single API
+        app.get('/tourpackages/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log("Getting Specific Package: ", id);
+            const query = { _id: ObjectId(id) };
+            const tourPackage = await tourCollection.findOne(query);
+            res.json(tourPackage);
+        });
 
         // POST API
         app.post('/tourpackages', async (req, res) => {
