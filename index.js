@@ -36,7 +36,6 @@ async function run() {
         // Showing Single Package Into Private Route
         app.get('/tourpackages/:id', async (req, res) => {
             const id = req.params.id;
-            console.log("Getting Specific Package: ", id);
             const query = { _id: ObjectId(id) };
             const tourPackage = await tourCollection.findOne(query);
             res.json(tourPackage);
@@ -47,7 +46,6 @@ async function run() {
             const newTourPack = req.body;
 
             const result = await tourCollection.insertOne(newTourPack);
-            console.log(result);
             res.json(result);
         });
 
@@ -56,7 +54,6 @@ async function run() {
             const booking = req.body;
 
             const result = await bookingCollection.insertOne(booking);
-            console.log(result);
             res.json(result);
         });
 
@@ -73,6 +70,21 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const result = await bookingCollection.deleteOne(query);
             res.json(result);
+        });
+
+        // My Booking
+        app.get('/bookings/:userEmail', async (req, res) => {
+            const result = await bookingCollection.find({ userEmail: req.params.userEmail }).toArray();
+            res.send(result);
+        });
+
+        // UPDATE Status
+        app.put("/bookings/:id", async (req, res) => {
+            const id = req.params.id;
+            const updatedStatus = req.body.status;
+            const query = { _id: ObjectId(id) };
+            console.log(updatedStatus)
+            // const result = await bookingCollection.
         })
 
     } finally {
